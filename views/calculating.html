@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Travel Booking Form</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="container mt-5">
+        <h2 class="mb-4">Travel Booking Form</h2>
+
+        <form id="travelForm">
+            <!-- City Dropdown -->
+            <div class="mb-3">
+                <label for="city" class="form-label">Select Your City</label>
+                <select class="form-select" id="city-select" aria-label="Select Your City">
+                    <option selected disabled>Select a city</option>
+                    <option value="Abu Dabi">Abu Dabi</option>
+                    <option value="Almaty">Almaty</option>
+                    <option value="Omsk">Omsk</option>
+                    <option value="Uralsk">Uralsk</option>
+                    <option value="Baku">Baku</option>
+                    <!-- Add more cities as needed -->
+                </select>
+            </div>
+
+            <!-- Destination -->
+            <div class="mb-3">
+                <label for="destination" class="form-label">Destination</label>
+                <select class="form-select" id="city-dest" aria-label="Select Your City">
+                    <option selected disabled>Select a city</option>
+                    <option value="Abu Dabi">Abu Dabi</option>
+                    <option value="Almaty">Almaty</option>
+                    <option value="Omsk">Omsk</option>
+                    <option value="Uralsk">Uralsk</option>
+                    <option value="Baku">Baku</option>
+                    <!-- Add more cities as needed -->
+                </select>
+            </div>
+
+            <!-- Date of Arrival -->
+            <div class="mb-3">
+                <label for="arrivalDate" class="form-label">Date of Arrival</label>
+                <input type="date" class="form-control" id="arrivalDate">
+            </div>
+
+            <!-- Date of Departure -->
+            <div class="mb-3">
+                <label for="departureDate" class="form-label">Date of Departure</label>
+                <input type="date" class="form-control" id="departureDate">
+            </div>
+
+            <!-- Number of People -->
+            <div class="mb-3">
+                <label for="numberOfPeople" class="form-label">Number of People</label>
+                <input type="number" class="form-control" id="numberOfPeople" min="1">
+            </div>
+
+            <!-- Number of Kids -->
+            <div class="mb-3">
+                <label for="numberOfKids" class="form-label">Number of Kids</label>
+                <input type="number" class="form-control" id="numberOfKids" min="0">
+            </div>
+
+            <!-- Submit Button -->
+            <button type="button" onclick="submitForm()" class="btn btn-primary">Submit</button>
+            <button type="button" onclick="viewHistory()" class="btn btn-secondary">View History</button>
+        </form>
+        <div class="container mt-4">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Cost Output</h5>
+                <p class="card-text" id="costOutput"></p>
+              </div>
+            </div>
+          </div>
+    </div>
+
+    <!-- Bootstrap JS and Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        function viewHistory(){
+          window.location.href='/travel/history'
+        }
+        async function postData(data) {
+        try {
+            const req = await fetch('http://localhost:3000/travel/apiFly', {
+            method: "POST",
+            headers: {
+            "Content-Type": "application/json",
+    },
+            body: JSON.stringify(data),
+});
+
+            if (!req.ok) {
+                throw new Error(`HTTP error! Status: ${req.status}`);
+            }
+
+            const res = await req.json();
+            console.log(res);
+        } catch (error) {
+            console.error('Error during POST request:', error);
+        }
+    }
+
+       async function submitForm() {
+            const city = document.getElementById('city-select').value;
+            const destination = document.getElementById('city-dest').value;
+            const arrivalDate = document.getElementById('arrivalDate').value;
+            const departureDate = document.getElementById('departureDate').value;
+            const numberOfPeople = document.getElementById('numberOfPeople').value;
+            const numberOfKids = document.getElementById('numberOfKids').value;
+            const formData = {
+            city: city,
+            destination: destination,
+            arrivalDate: arrivalDate,
+            departureDate: departureDate,
+            numberOfPeople: numberOfPeople,
+            numberOfKids: numberOfKids
+                };
+                postData(formData)
+            try {
+                    const response = await fetch(`http://localhost:3000/travel/apiFly?city=${city}&destination=${destination}&NoP=${numberOfPeople}&NoK=${numberOfKids}&ADate=${arrivalDate}&=DDate${departureDate}`);
+                    const newsData = await response.json();
+                    updateUI(newsData)
+                    console.log(newsData)
+                } catch (error) {
+                    console.error('Error fetching news data:', error);
+                }
+       }
+    function updateUI(cost){
+        const html = document.getElementById('costOutput')
+        html.innerHTML=cost.answer
+    }
+    </script>
+</body>
+
+</html>
